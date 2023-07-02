@@ -8,18 +8,21 @@ import { useState, useEffect } from "react";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Nav = () => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
+  console.log("hello");
+  console.log(session);
+
   const [providers, setProviders] = useState(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
   useEffect(() => {
-    const setProviders = async () => {
+    const setUpProviders = async () => {
       const response = await getProviders();
       setProviders(response);
     };
+    setUpProviders();
   }, []);
   return (
-    <nav>
-      Nav
+    <nav className="nav">
       <Link href="/" />
       <Image
         src={logo}
@@ -30,14 +33,19 @@ const Nav = () => {
       />
       <p>PROMOTOPIA</p>
       <div>
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div>
             <Link href="/create-prompt">Create Post</Link>
             <button type="button" onClick={signOut}>
               Sign Out
             </button>
             <Link href="/profile">
-              <Image src={logo} alt="Profile Image" width={30} height={30} />
+              <Image
+                src={session?.user.image}
+                alt="Profile Image"
+                width={30}
+                height={30}
+              />
             </Link>
           </div>
         ) : (
@@ -56,11 +64,11 @@ const Nav = () => {
         )}
       </div>
       {/* MOBILE NAV */}
-      <div>
-        {isUserLoggedIn ? (
+      <div className="mobile-nav">
+        {session?.user ? (
           <div>
             <Image
-              src={logo}
+              src={session?.user.image}
               width={37}
               height={37}
               alt="profile"
@@ -82,7 +90,6 @@ const Nav = () => {
                 </button>
               </div>
             )}
-            <p>MOBILE</p>
           </div>
         ) : (
           <>
